@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">منصة تعليمية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            direction: rtl;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 25px; }
+        
+        #gatewayMenu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 450px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        .gateway-card {
+            background: #ffffff;
+            border: 2px solid #007bff;
+            padding: 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            color: #007bff;
+            transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .gateway-card:hover { background-color: #007bff; color: white; transform: translateY(-3px); }
+        .gateway-card.parent { border-color: #17a2b8; color: #17a2b8; }
+        .gateway-card.parent:hover { background-color: #17a2b8; color: white; }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            display: none;
+            position: relative;
+        }
+        
+        .settings-gear-btn {
+            position: absolute;
+            top: -15px;
+            left: 0px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .settings-gear-btn:hover { background: #343a40; transform: rotate(45deg); }
+
+        .grid-card {
+            background: #ffffff;
+            border: 2px solid #007bff;
+            padding: 25px 15px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+            transition: 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .grid-card:hover { background-color: #007bff; color: white; transform: translateY(-3px); }
+
+        .section-box { display: none; background: #fafbfc; border: 1px solid #e1e4e8; padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .back-btn { background-color: #dc3545; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; margin-bottom: 15px; }
+        label { display: block; margin-top: 12px; font-weight: bold; color: #495057; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; }
+        .submit-btn { background-color: #28a745; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .submit-btn:hover { background-color: #218838; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: center; }
+        th { background-color: #e9ecef; }
+        
+        .admin-sub-menu { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .admin-sub-menu button { flex: 1; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .admin-sub-menu button:hover { background: #0056b3; }
+        .days-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+        .days-group label { font-weight: normal; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="platformTitle">منصة تعليمية</h1>
+
+        <div id="gatewayMenu">
+            <div class="gateway-card" onclick="showSection('masterLoginSection')">دخول المستر (لوحة التحكم)</div>
+            <div class="gateway-card parent" onclick="showSection('parentLoginSection')">دخول ولي الأمر (متابعة الطالب)</div>
+        </div>
+
+        <div id="masterLoginSection" class="section-box">
+            <button class="back-btn" onclick="showGateway()">العودة للخلف</button>
+            <h3>تسجيل دخول المستر</h3>
+            <label>رقم هاتف المستر:</label>
+            <input type="text" id="masterPhone" placeholder="أدخل رقم الهاتف...">
+            <label>كلمة المرور:</label>
+            <input type="password" id="masterPass" placeholder="أدخل كلمة المرور...">
+            <button class="submit-btn" onclick="verifyMasterLogin()">دخول المنصة</button>
+            <div id="masterLoginError" style="color:red; margin-top:10px; text-align:center; font-weight:bold;"></div>
+        </div>
+
+        <div id="homeMenu" class="main-grid">
+            <button class="settings-gear-btn" onclick="showSection('masterSettingsSection')" title="إعدادات الحساب">⚙️</button>
+
+            <div class="grid-card" onclick="showSection('quizSection')">تسجيل التسميع اليومي</div>
+            <div class="grid-card" onclick="showSection('attendanceSection')">تسجيل الحضور</div>
+            <div class="grid-card" onclick="showSection('paymentSection')">دفع المصروفات</div>
+            <div class="grid-card" onclick="showSection('registerSection')">تسجيل طالب جديد</div>
+            <div class="grid-card" onclick="showSection('adminSection')" style="grid-column: 1 / -1; background: #343a40; color: white;">لوحة السجلات والإدارة</div>
+            <div class="grid-card" onclick="showGateway()" style="grid-column: 1 / -1; background: #dc3545; color: white;">تسجيل الخروج</div>
+        </div>
+
+        <div id="masterSettingsSection" class="section-box">
+            <button class="back-btn" onclick="showSection('homeMenu')">الرئيسية</button>
+            <h3>إعدادات وتعديل بيانات المنصة والمستر</h3>
+            <label>رقم هاتف المستر القديم:</label>
+            <input type="text" id="oldMasterPhone" placeholder="أدخل الرقم القديم...">
+            <label>كلمة المرور القديمة:</label>
+            <input type="password" id="oldMasterPass" placeholder="أدخل كلمة المرور القديمة...">
+            
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccc;">
+
+            <label>اسم المنصة الجديد:</label>
+            <input type="text" id="newPlatformName" placeholder="أدخل اسم المنصة الجديد...">
+            <label>رقم هاتف المستر الجديد:</label>
+            <input type="text" id="newMasterPhone" placeholder="أدخل الرقم الجديد...">
+            <label>كلمة المرور الجديدة:</label>
+            <input type="text" id="newMasterPass" placeholder="أدخل كلمة المرور الجديدة...">
+            
+            <button class="submit-btn" onclick="updateMasterCredentials()">حفظ التغييرات</button>
+            <div id="masterSettingsMsg" style="margin-top:10px; font-weight:bold; text-align:center;"></div>
+
+            <hr style="margin: 30px 0; border: 0; border-top: 2px dashed #dc3545;">
+
+            <div style="background: #fff5f5; border: 1px solid #f5c6cb; padding: 15px; border-radius: 8px;">
+                <h4 style="color: #dc3545; margin-top: 0;">منطقة الخطر: بدء سنة دراسية جديدة</h4>
+                <p style="font-size: 14px; color: #721c24;">مسح جميع بيانات الطلاب، درجات التسميع، والاختبارات نهائياً وكأن المنصة تبدأ من جديد.</p>
+                
+                <label>رقم هاتف المستر لتأكيد المسح:</label>
+                <input type="text" id="resetMasterPhone" placeholder="أدخل رقم الهاتف...">
+                <label>كلمة مرور المستر لتأكيد المسح:</label>
+                <input type="password" id="resetMasterPass" placeholder="أدخل كلمة المرور...">
+                
+                <button onclick="resetAllStudentsData()" style="background-color: #dc3545; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px;">مسح جميع بيانات الطلاب على المنصة</button>
+                <div id="resetMsg" style="margin-top:10px; font-weight:bold; text-align:center;"></div>
+            </div>
+        </div>
+
+        <div id="quizSection" class="section-box">
+            <button class="back-btn" onclick="showSection('homeMenu')">الرئيسية</button>
+            <h3>تسجيل التسميع اليومي</h3>
+            <label>رقم الطالب:</label>
+            <input type="number" id="quizCardId" placeholder="اكتب رقم الطالب ثم اضغط Enter..." onkeypress="handleQuizCardEnter(event)">
+            <div id="quizStudentInfo" style="margin-top: 8px; font-weight: bold; color: #007bff;"></div>
+            
+            <label>درجة التسميع:</label>
+            <input type="number" id="quizScoreVal" placeholder="اكتب الدرجة ثم اضغط Enter..." onkeypress="handleQuizScoreEnter(event)" disabled>
+            <div id="quizResultMsg" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+
+        <div id="attendanceSection" class="section-box">
+            <button class="back-btn" onclick="showSection('homeMenu')">الرئيسية</button>
+            <h3>تسجيل الحضور (بالرقم)</h3>
+            <label>رقم الطالب:</label>
+            <input type="number" id="attStudentCardId" placeholder="اكتب رقم الطالب ثم اضغط Enter..." onkeypress="handleAttendanceEnter(event)">
+            <div id="attStudentInfo" style="margin-top: 8px; font-weight: bold; color: #007bff;"></div>
+            <button class="submit-btn" id="attSubmitBtn" onclick="saveAttendance()" style="display:none;">تأكيد الحضور للطالب</button>
+            <div id="attResultMsg" style="margin-top: 10px; font-weight: bold;"></div>
+        </div>
+
+        <div id="paymentSection" class="section-box">
+            <button class="back-btn" onclick="showSection('homeMenu')">الرئيسية</button>
+            <h3>دفع المصروفات</h3>
+            <label>الصف الدراسي:</label>
+            <select id="payGrade">
+                <option value="">-- اختر الصف --</option>
+                <option value="الأول الإعدادي">الأول الإعدادي</option>
+                <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+                <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+                <option value="الأول الثانوي">الأول الثانوي</option>
+                <option value="الثاني الثانوي">الثاني الثانوي</option>
+                <option value="الثالث الثانوي">الثالث الثانوي</option>
+            </select>
+            <label>رقم الطالب:</label>
+            <input type="number" id="payStudentCardId" placeholder="أدخل رقم الطالب...">
+            <button class="submit-btn" onclick="savePayment()">تأكيد دفع المصروفات</button>
+            <div id="payResultMsg" style="margin-top:10px; font-weight:bold;"></div>
+        </div>
+
+        <div id="registerSection" class="section-box">
+            <button class="back-btn" onclick="showSection('homeMenu')">الرئيسية</button>
+            <h3>تسجيل طالب جديد وتوليد رقمه</h3>
+            <label>الاسم الرباعي:</label>
+            <input type="text" id="newName" placeholder="أدخل اسم الطالب رباعي...">
+            <label>الصف الدراسي:</label>
+            <select id="newGrade">
+                <option value="الأول الإعدادي">الأول الإعدادي</option>
+                <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+                <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+                <option value="الأول الثانوي">الأول الثانوي</option>
+                <option value="الثاني الثانوي">الثاني الثانوي</option>
+                <option value="الثالث الثانوي">الثالث الثانوي</option>
+            </select>
+            <label>رقم ولي الأمر:</label>
+            <input type="text" id="newParentPhone" placeholder="أدخل رقم ولي الأمر...">
+            
+            <label>أيام الحضور الأسبوعية:</label>
+            <div class="days-group">
+                <label><input type="checkbox" name="regDay" value="السبت"> السبت</label>
+                <label><input type="checkbox" name="regDay" value="الأحد"> الأحد</label>
+                <label><input type="checkbox" name="regDay" value="الإثنين"> الإثنين</label>
+                <label><input type="checkbox" name="regDay" value="الثلاثاء"> الثلاثاء</label>
+                <label><input type="checkbox" name="regDay" value="الأربعاء"> الأربعاء</label>
+                <label><input type="checkbox" name="regDay" value="الخميس"> الخميس</label>
+                <label><input type="checkbox" name="regDay" value="الجمعة"> الجمعة</label>
+            </div>
+
+            <button class="submit-btn" onclick="registerNewStudent()">حفظ الطالب وتوليد رقمه</button>
+            <div id="newStudentResult" style="margin-top: 15px; text-align: center; font-weight: bold;"></div>
+        </div>
+
+        <div id="adminSection" class="section-box">
+            <button class="back-btn" onclick="showSection('homeMenu')">الرئيسية</button>
+            <h3>لوحة السجلات والإدارة (المستر)</h3>
+            
+            <div class="admin-sub-menu">
+                <button onclick="openAdminTab('paymentsLog')">سجلات المصروفات</button>
+                <button onclick="openAdminTab('examCreateTab')">إنشاء اختبار</button>
+                <button onclick="openAdminTab('examScoreTab')">إدخال درجة اختبار</button>
+                <button onclick="openAdminTab('studentSearchTab')">بحث عن طالب وكشف الصفوف</button>
+            </div>
+
+            <div id="paymentsLog" class="admin-tab-content">
+                <h4>سجل المصروفات</h4>
+                <label>اختر المرحلة:</label>
+                <select id="payLogGrade" onchange="loadPaymentsLog()">
+                    <option value="">-- اختر الصف --</option>
+                    <option value="الأول الإعدادي">الأول الإعدادي</option>
+                    <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+                    <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+                    <option value="الأول الثانوي">الأول الثانوي</option>
+                    <option value="الثاني الثانوي">الثاني الثانوي</option>
+                    <option value="الثالث الثانوي">الثالث الثانوي</option>
+                </select>
+                <div id="paymentsTableContainer"></div>
+            </div>
+
+            <div id="examCreateTab" class="admin-tab-content" style="display:none;">
+                <h4>إضافة اختبار جديد</h4>
+                <label>اسم الاختبار:</label>
+                <input type="text" id="newExamName" placeholder="مثال: كويز 1">
+                <label>الصف الدراسي:</label>
+                <select id="newExamGrade">
+                    <option value="الأول الإعدادي">الأول الإعدادي</option>
+                    <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+                    <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+                    <option value="الأول الثانوي">الأول الثانوي</option>
+                    <option value="الثاني الثانوي">الثاني الثانوي</option>
+                    <option value="الثالث الثانوي">الثالث الثانوي</option>
+                </select>
+                <label>الدرجة النهائية:</label>
+                <input type="number" id="newExamMax" placeholder="مثال: 30">
+                <button class="submit-btn" onclick="createExam()">حفظ الاختبار</button>
+            </div>
+
+            <div id="examScoreTab" class="admin-tab-content" style="display:none;">
+                <h4>إدخال درجات الاختبارات</h4>
+                <label>اختر المرحلة:</label>
+                <select id="scoreExamGrade" onchange="loadExamsForDropdown()">
+                    <option value="">-- اختر الصف --</option>
+                    <option value="الأول الإعدادي">الأول الإعدادي</option>
+                    <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+                    <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+                    <option value="الأول الثانوي">الأول الثانوي</option>
+                    <option value="الثاني الثانوي">الثاني الثانوي</option>
+                    <option value="الثالث الثانوي">الثالث الثانوي</option>
+                </select>
+                <label>اختر الاختبار:</label>
+                <select id="scoreExamSelect"></select>
+                <label>رقم الطالب:</label>
+                <input type="number" id="scoreStudentCard" placeholder="رقم الطالب...">
+                <label>الدرجة:</label>
+                <input type="number" id="studentExamScoreVal" placeholder="الدرجة...">
+                <button class="submit-btn" onclick="saveStudentExamScore()">حفظ درجة الطالب</button>
+            </div>
+
+            <!-- قسم البحث وكشف الصفوف الجديد كلياً -->
+            <div id="studentSearchTab" class="admin-tab-content" style="display:none;">
+                <h4>بحث عن طالب أو عرض كشف الصف الدراسي</h4>
+                
+                <label>أو اختر الصف الدراسي لعرض الكشف كاملاً:</label>
+                <select id="adminGradeSelect" onchange="loadGradeStudentsList()">
+                    <option value="">-- اختر الصف لعرض الكشف --</option>
+                    <option value="الأول الإعدادي">الأول الإعدادي</option>
+                    <option value="الثاني الإعدادي">الثاني الإعدادي</option>
+                    <option value="الثالث الإعدادي">الثالث الإعدادي</option>
+                    <option value="الأول الثانوي">الأول الثانوي</option>
+                    <option value="الثاني الثانوي">الثاني الثانوي</option>
+                    <option value="الثالث الثانوي">الثالث الثانوي</option>
+                </select>
+
+                <div style="margin: 15px 0; text-align: center; font-weight: bold; color: #6c757d;">--- أو ---</div>
+
+                <label>أدخل رقم الطالب المباشر ثم اضغط Enter:</label>
+                <input type="number" id="adminSearchQueryInput" placeholder="رقم الطالب ثم Enter..." onkeypress="searchStudentAdmin(event)">
+                
+                <div id="studentProfileResult" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+
+        <div id="parentLoginSection" class="section-box">
+            <button class="back-btn" onclick="showGateway()">العودة للخلف</button>
+            <h3>متابعة ولي الأمر (عرض فقط)</h3>
+            <label>رقم الطالب:</label>
+            <input type="number" id="parentLoginCardId" placeholder="رقم الطالب المسجل...">
+            <label>رقم ولي الأمر:</label>
+            <input type="text" id="parentLoginPhone" placeholder="رقم تليفون ولي الأمر...">
+            <button class="submit-btn" onclick="parentLoginSubmit()">دخول لمتابعة الطالب</button>
+            <div id="parentDashboardResult" style="margin-top: 20px;"></div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSearchedCardId = null;
+
+        window.onload = function() {
+            fetch('/api/platform/config')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.platform_name) {
+                        document.getElementById('pageTitle').innerText = data.platform_name;
+                        document.getElementById('platformTitle').innerText = data.platform_name;
+                        document.getElementById('newPlatformName').value = data.platform_name;
+                    }
+                });
+        };
+
+        function showGateway() {
+            document.getElementById('gatewayMenu').style.display = 'flex';
+            document.getElementById('homeMenu').style.display = 'none';
+            document.querySelectorAll('.section-box').forEach(b => b.style.display = 'none');
+        }
+
+        function showSection(id) {
+            document.getElementById('gatewayMenu').style.display = 'none';
+            document.getElementById('homeMenu').style.display = 'none';
+            document.querySelectorAll('.section-box').forEach(b => b.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function verifyMasterLogin() {
+            const phone = document.getElementById('masterPhone').value;
+            const pass = document.getElementById('masterPass').value;
+            
+            fetch('/api/master/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ phone, pass })
+            }).then(res => res.json()).then(data => {
+                if (data.success) {
+                    document.getElementById('masterLoginError').innerText = '';
+                    document.getElementById('masterPhone').value = '';
+                    document.getElementById('masterPass').value = '';
+                    document.getElementById('masterLoginSection').style.display = 'none';
+                    document.getElementById('homeMenu').style.display = 'grid';
+                } else {
+                    document.getElementById('masterLoginError').innerText = 'رقم الهاتف أو كلمة المرور غير صحيحة!';
+                }
+            });
+        }
+
+        function updateMasterCredentials() {
+            const old_phone = document.getElementById('oldMasterPhone').value;
+            const old_pass = document.getElementById('oldMasterPass').value;
+            const platform_name = document.getElementById('newPlatformName').value;
+            const new_phone = document.getElementById('newMasterPhone').value;
+            const new_pass = document.getElementById('newMasterPass').value;
+            const msg = document.getElementById('masterSettingsMsg');
+
+            if (!old_phone || !old_pass || !new_phone || !new_pass || !platform_name) {
+                msg.innerHTML = '<span style="color:red">برجاء إدخال جميع الحقول المطلوبة</span>';
+                return;
+            }
+
+            fetch('/api/master/update', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ old_phone, old_pass, new_phone, new_pass, platform_name })
+            }).then(async res => {
+                let data = await res.json();
+                if (res.ok && data.message === 'Success') {
+                    msg.innerHTML = '<span style="color:green">تم تحديث بيانات المنصة والمستر بنجاح ✅</span>';
+                    document.getElementById('pageTitle').innerText = platform_name;
+                    document.getElementById('platformTitle').innerText = platform_name;
+                    document.getElementById('oldMasterPhone').value = '';
+                    document.getElementById('oldMasterPass').value = '';
+                    document.getElementById('newMasterPhone').value = '';
+                    document.getElementById('newMasterPass').value = '';
+                    setTimeout(() => { showSection('homeMenu'); msg.innerHTML = ''; }, 2000);
+                } else {
+                    msg.innerHTML = `<span style="color:red">${data.error || 'حدث خطأ'}</span>`;
+                }
+            });
+        }
+
+        function resetAllStudentsData() {
+            const phone = document.getElementById('resetMasterPhone').value;
+            const pass = document.getElementById('resetMasterPass').value;
+            const msg = document.getElementById('resetMsg');
+
+            if (!phone || !pass) {
+                msg.innerHTML = '<span style="color:red">برجاء إدخال رقم الهاتف وكلمة المرور لتأكيد العملية</span>';
+                return;
+            }
+
+            let confirmDelete = confirm('هل أنت متأكد تماماً من رغبتك في مسح جميع بيانات الطلاب والدرجات والسجلات؟ هذه الخطوة لا يمكن التراجع عنها وستبدأ من جديد.');
+            if (!confirmDelete) return;
+
+            fetch('/api/master/reset-students', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ phone, pass })
+            }).then(async res => {
+                let data = await res.json();
+                if (res.ok && data.message === 'Success') {
+                    msg.innerHTML = '<span style="color:green">تم مسح جميع بيانات الطلاب بنجاح. أهلاً بالسنة الجديدة! 🎉</span>';
+                    document.getElementById('resetMasterPhone').value = '';
+                    document.getElementById('resetMasterPass').value = '';
+                    setTimeout(() => { showSection('homeMenu'); msg.innerHTML = ''; }, 3000);
+                } else {
+                    msg.innerHTML = `<span style="color:red">${data.error || 'رقم الهاتف أو كلمة المرور غير صحيحة'}</span>`;
+                }
+            });
+        }
+
+        function openAdminTab(tabId) {
+            document.querySelectorAll('.admin-tab-content').forEach(t => t.style.display = 'none');
+            document.getElementById(tabId).style.display = 'block';
+        }
+
+        function handleQuizCardEnter(e) {
+            if (e.key === 'Enter') {
+                const cardId = document.getElementById('quizCardId').value;
+                if (!cardId) return;
+                fetch(`/api/students/search/${cardId}`).then(res => res.json()).then(student => {
+                    if (!student || student.error) {
+                        document.getElementById('quizStudentInfo').innerHTML = '<span style="color:red">الطالب غير موجود</span>';
+                        document.getElementById('quizScoreVal').disabled = true;
+                    } else {
+                        document.getElementById('quizStudentInfo').innerHTML = `الطالب: ${student.name} (صف: ${student.grade})`;
+                        document.getElementById('quizScoreVal').disabled = false;
+                        document.getElementById('quizScoreVal').focus();
+                    }
+                });
+            }
+        }
+
+        function handleQuizScoreEnter(e) {
+            if (e.key === 'Enter') {
+                const card_id = document.getElementById('quizCardId').value;
+                const score = document.getElementById('quizScoreVal').value;
+                if (!card_id || !score) return;
+
+                fetch('/api/students/quiz', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ card_id, score })
+                }).then(() => {
+                    document.getElementById('quizResultMsg').innerHTML = '<span style="color:green">تم تسجيل التسميع والحضور بتاريخ اليوم بنجاح ✅</span>';
+                    document.getElementById('quizCardId').value = '';
+                    document.getElementById('quizStudentInfo').innerHTML = '';
+                    document.getElementById('quizScoreVal').value = '';
+                    document.getElementById('quizScoreVal').disabled = true;
+                    document.getElementById('quizCardId').focus();
+                    setTimeout(() => { document.getElementById('quizResultMsg').innerHTML = ''; }, 2500);
+                });
+            }
+        }
+
+        function handleAttendanceEnter(e) {
+            if (e.key === 'Enter') {
+                const cardId = document.getElementById('attStudentCardId').value;
+                if (!cardId) return;
+                fetch(`/api/students/search/${cardId}`).then(res => res.json()).then(student => {
+                    if (!student || student.error) {
+                        document.getElementById('attStudentInfo').innerHTML = '<span style="color:red">رقم الطالب غير موجود</span>';
+                        document.getElementById('attSubmitBtn').style.display = 'none';
+                    } else {
+                        document.getElementById('attStudentInfo').innerHTML = `الطالب: ${student.name} (صف: ${student.grade})`;
+                        document.getElementById('attSubmitBtn').style.display = 'block';
+                    }
+                });
+            }
+        }
+
+        function saveAttendance() {
+            const card_id = document.getElementById('attStudentCardId').value;
+            const msg = document.getElementById('attResultMsg');
+            if (!card_id) return alert('أدخل رقم الطالب');
+
+            fetch('/api/students/attendance', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ card_id })
+            }).then(res => res.json()).then(data => {
+                if (data.error) {
+                    msg.innerHTML = `<span style="color:red">${data.error}</span>`;
+                } else {
+                    msg.innerHTML = `<span style="color:green">تم تسجيل الحضور للطالب رقم ${card_id} بنجاح ✅</span>`;
+                    document.getElementById('attStudentCardId').value = '';
+                    document.getElementById('attStudentInfo').innerHTML = '';
+                    document.getElementById('attSubmitBtn').style.display = 'none';
+                    setTimeout(() => { msg.innerHTML = ''; }, 3000);
+                }
+            });
+        }
+
+        function savePayment() {
+            const card_id = document.getElementById('payStudentCardId').value;
+            const msg = document.getElementById('payResultMsg');
+            if (!card_id) return alert('أدخل رقم الطالب');
+
+            fetch('/api/students/payment', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ card_id })
+            }).then(res => res.json()).then(data => {
+                if (data.error) {
+                    msg.innerHTML = `<span style="color:red">${data.error}</span>`;
+                } else {
+                    msg.innerHTML = `<span style="color:green">تم تسجيل دفع المصروفات بنجاح للطالب رقم ${card_id} ✅</span>`;
+                    document.getElementById('payStudentCardId').value = '';
+                    setTimeout(() => { msg.innerHTML = ''; }, 3000);
+                }
+            });
+        }
+
+        function registerNewStudent() {
+            const name = document.getElementById('newName').value;
+            const grade = document.getElementById('newGrade').value;
+            const parent_phone = document.getElementById('newParentPhone').value;
+            
+            let selectedDays = [];
+            document.querySelectorAll('input[name="regDay"]:checked').forEach(cb => selectedDays.push(cb.value));
+            const days = selectedDays.join('، ');
+
+            if (!name || !parent_phone) return alert('املأ البيانات الأساسية');
+
+            fetch('/api/students/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, grade, parent_phone, days })
+            }).then(res => res.json()).then(data => {
+                if(data.error) alert(data.error);
+                else {
+                    document.getElementById('newStudentResult').innerHTML = `
+                        <p style="color:green;">تم تسجيل الطالب وتوليد رقمه بنجاح! 🎉</p>
+                        <p style="font-size: 22px; background:#e9ecef; padding:10px; border-radius:5px; color:#007bff;">رقم الطالب: ${data.card_id}</p>
+                    `;
+                    document.getElementById('newName').value = '';
+                    document.getElementById('newParentPhone').value = '';
+                    document.querySelectorAll('input[name="regDay"]').forEach(cb => cb.checked = false);
+                }
+            });
+        }
+
+        function loadPaymentsLog() {
+            const grade = document.getElementById('payLogGrade').value;
+            const container = document.getElementById('paymentsTableContainer');
+            if(!grade) { container.innerHTML = ''; return; }
+
+            fetch(`/api/students/grade/${grade}`).then(res => res.json()).then(data => {
+                let html = `
+                    <label style="margin-top:15px;">بحث في السجل:</label>
+                    <input type="text" id="paySearchInput" placeholder="اكتب للبحث..." onkeyup="filterPayTable()">
+                    <table id="payTable" style="margin-top:10px;">
+                        <tr><th>رقم الطالب</th><th>اسم الطالب</th><th>حالة المصروفات</th></tr>`;
+                data.forEach(s => {
+                    html += `<tr><td>${s.card_id}</td><td>${s.name}</td><td>${s.paid ? '✅ دافع' : '❌ لم يدفع'}</td></tr>`;
+                });
+                html += `</table>`;
+                container.innerHTML = html;
+            });
+        }
+
+        function filterPayTable() {
+            let input = document.getElementById('paySearchInput').value.toLowerCase();
+            let rows = document.getElementById('payTable').getElementsByTagName('tr');
+            for (let i = 1; i < rows.length; i++) {
+                let text = rows[i].innerText.toLowerCase();
+                rows[i].style.display = text.includes(input) ? '' : 'none';
+            }
+        }
+
+        function createExam() {
+            const exam_name = document.getElementById('newExamName').value;
+            const grade = document.getElementById('newExamGrade').value;
+            const max_score = document.getElementById('newExamMax').value;
+            if(!exam_name || !max_score) return alert('أكمل بيانات الاختبار');
+
+            fetch('/api/exams/create', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ exam_name, grade, max_score })
+            }).then(() => { alert('تم إضافة الاختبار بنجاح'); document.getElementById('newExamName').value=''; document.getElementById('newExamMax').value=''; });
+        }
+
+        function loadExamsForDropdown() {
+            const grade = document.getElementById('scoreExamGrade').value;
+            const sel = document.getElementById('scoreExamSelect');
+            sel.innerHTML = '<option value="">جاري التحميل...</option>';
+            if(!grade) { sel.innerHTML = '<option value="">-- اختر الصف --</option>'; return; }
+
+            fetch(`/api/exams/grade/${grade}`).then(res => res.json()).then(data => {
+                sel.innerHTML = '<option value="">-- اختر الاختبار --</option>';
+                data.forEach(e => {
+                    let opt = document.createElement('option');
+                    opt.value = e.id;
+                    opt.textContent = `${e.exam_name} (من ${e.max_score})`;
+                    sel.appendChild(opt);
+                });
+            });
+        }
+
+        function saveStudentExamScore() {
+            const exam_id = document.getElementById('scoreExamSelect').value;
+            const card_id = document.getElementById('scoreStudentCard').value;
+            const score = document.getElementById('studentExamScoreVal').value;
+            if(!exam_id || !card_id || !score) return alert('أكمل البيانات');
+
+            fetch('/api/exams/score', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ card_id, exam_id, score })
+            }).then(() => { alert('تم حفظ درجة الاختبار بنجاح'); document.getElementById('scoreStudentCard').value=''; document.getElementById('studentExamScoreVal').value=''; });
+        }
+
+        // دالة عرض كشف الطلاب عند اختيار الصف الدراسي
+        function loadGradeStudentsList() {
+            const grade = document.getElementById('adminGradeSelect').value;
+            const resultDiv = document.getElementById('studentProfileResult');
+            document.getElementById('adminSearchQueryInput').value = ''; // تصفير خانة البحث برقم الطالب
+
+            if (!grade) {
+                resultDiv.innerHTML = '';
+                return;
+            }
+
+            fetch(`/api/students/grade/${grade}`).then(res => res.json()).then(students => {
+                if (!students || students.length === 0) {
+                    resultDiv.innerHTML = `<p style="color:red; text-align:center;">لا توجد طلاب مسجلين في ${grade}</p>`;
+                    return;
+                }
+
+                let html = `
+                    <h4 style="color:#007bff; margin-top:15px;">كشف طلاب (${grade}) - إجمالي: ${students.length} طالب</h4>
+                    <p style="font-size:13px; color:#6c757d;">اضغط على أي طالب لفتح ملفه ومتابعاته بالكامل:</p>
+                    <table>
+                        <tr>
+                            <th>رقم الطالب</th>
+                            <th>اسم الطالب</th>
+                            <th>ولي الأمر</th>
+                            <th>الإجراء</th>
+                        </tr>`;
+                
+                students.forEach(s => {
+                    html += `
+                        <tr style="cursor:pointer;" onclick="fetchAndDisplayStudent(${s.card_id})" title="اضغط لفتح ملف الطالب">
+                            <td><strong>${s.card_id}</strong></td>
+                            <td style="text-align:right; padding-right:15px;">${s.name}</td>
+                            <td>${s.parent_phone}</td>
+                            <td><button style="background:#007bff; color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer;">فتح الملف</button></td>
+                        </tr>`;
+                });
+                html += `</table>`;
+                resultDiv.innerHTML = html;
+            });
+        }
+
+        // دالة البحث المباشر برقم الطالب بالضغط على Enter
+        function searchStudentAdmin(e) {
+            if (e.key === 'Enter') {
+                const query = document.getElementById('adminSearchQueryInput').value;
+                document.getElementById('adminGradeSelect').value = ''; // تصفير قائمة اختيار الصف
+                if (!query) return;
+
+                fetchAndDisplayStudent(query);
+            }
+        }
+
+        // دالة جلب وعرض بيانات الطالب وملفه الشخصي المطور (مع زر الواتساب)
+        function fetchAndDisplayStudent(query) {
+            fetch(`/api/students/search/${query}`).then(res => res.json()).then(student => {
+                const resultDiv = document.getElementById('studentProfileResult');
+                if (!student || student.error) { resultDiv.innerHTML = '<p style="color:red; text-align:center;">الطالب غير موجود</p>'; return; }
+                
+                currentSearchedCardId = student.card_id;
+
+                let quizzesHtml = student.quizzes.map(q => {
+                    let isAbsent = q.id === null;
+                    
+                    if (isAbsent) {
+                        return `
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#fff3f3; padding:8px; margin-top:5px; border-radius:4px; border: 1px solid #f5c6cb;">
+                                <span style="color:red; font-weight:bold;">تاريخ: ${q.quiz_date} - غياب ❌ (الدرجة: 0)</span>
+                                <div>
+                                    <input type="number" id="quizInput_${q.quiz_date.replace(/[\/\.]/g, '_')}" placeholder="درجة التعديل" style="width:90px; display:inline-block; padding:3px;">
+                                    <button onclick="saveAbsentQuiz('${q.quiz_date}')" style="background:#28a745; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">تعديل وحفظ</button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        return `
+                            <div style="display:flex; justify-content:space-between; align-items:center; background:#f8f9fa; padding:8px; margin-top:5px; border-radius:4px;">
+                                <span>تاريخ: ${q.quiz_date} - الدرجة: <strong>${q.score}</strong></span>
+                                <div>
+                                    <input type="number" id="editQ_${q.id}" value="${q.score}" style="width:70px; display:inline-block; padding:3px;">
+                                    <button onclick="updateQuiz(${q.id})" style="background:#ffc107; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">تعديل</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }).join('');
+
+                let examsHtml = student.exam_records.map(e => `<li>${e.exam_name}: ${e.score} / ${e.max_score}</li>`).join('');
+                
+                // رابط مراسلة الواتساب المباشر لولي الأمر
+                let whatsappUrl = `https://wa.me/2${student.parent_phone}?text=${encodeURIComponent('السلام عليكم، ولي أمر الطالب ' + student.name + ' بخصوص متابعة المستوى الدراسي:')}`;
+
+                resultDiv.innerHTML = `
+                    <div style="background:#fff; border:2px solid #343a40; padding:15px; border-radius:6px; margin-top:10px; text-align:right;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; border-bottom:1px solid #dee2e6; padding-bottom:10px; margin-bottom:10px;">
+                            <h4 style="margin:0;">ملف الطالب (إدارة المستر)</h4>
+                            <a href="${whatsappUrl}" target="_blank" style="background:#25d366; color:white; padding:8px 15px; border-radius:5px; text-decoration:none; font-weight:bold; display:inline-flex; align-items:center; gap:5px;">
+                                💬 تواصل مع ولي الأمر (واتساب)
+                            </a>
+                        </div>
+                        <p><strong>الاسم الرباعي:</strong> ${student.name}</p>
+                        <p><strong>الصف الدراسي:</strong> ${student.grade}</p>
+                        <p><strong>رقم الطالب:</strong> ${student.card_id}</p>
+                        <p><strong>رقم ولي الأمر:</strong> ${student.parent_phone}</p>
+                        <p><strong>أيام الحضور:</strong> ${student.days || 'غير محددة'}</p>
+                        <p><strong>حالة المصروفات:</strong> ${student.paid ? 'تم الدفع 💰' : 'لم يدفع ⏳'}</p>
+                        
+                        <p><strong>سجل درجات التسميع والغياب (من 1 أغسطس 2026):</strong></p>
+                        <div style="max-height: 220px; overflow-y: auto; border: 1px solid #ced4da; padding: 5px; border-radius: 4px;">
+                            ${quizzesHtml || '<p>لا توجد سجلات</p>'}
+                        </div>
+
+                        <p style="margin-top:10px;"><strong>درجات الاختبارات:</strong></p>
+                        <ul>${examsHtml || '<li>لا توجد اختبارات مسجلة</li>'}</ul>
+                    </div>
+                `;
+            });
+        }
+
+        function updateQuiz(quiz_id) {
+            const score = document.getElementById(`editQ_${quiz_id}`).value;
+            if(!score) return alert('أدخل الدرجة');
+
+            fetch('/api/students/update-quiz', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ quiz_id, score })
+            }).then(() => {
+                alert('تم تعديل درجة التسميع بنجاح');
+                searchStudentAdmin({ key: 'Enter' });
+            });
+        }
+
+        function saveAbsentQuiz(quizDate) {
+            let inputId = `quizInput_${quizDate.replace(/[\/\.]/g, '_')}`;
+            const score = document.getElementById(inputId).value;
+            if(!score) return alert('أدخل درجة التعديل لهذا اليوم');
+
+            fetch('/api/students/add-quiz-date', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ card_id: currentSearchedCardId, quiz_date: quizDate, score })
+            }).then(() => {
+                alert('تم التعديل وحفظ الدرجة بنجاح ✅');
+                searchStudentAdmin({ key: 'Enter' });
+            });
+        }
+
+        function parentLoginSubmit() {
+            const card_id = document.getElementById('parentLoginCardId').value;
+            const parent_phone = document.getElementById('parentLoginPhone').value;
+            if(!card_id || !parent_phone) return alert('أدخل رقم الطالب ورقم ولي الأمر');
+
+            fetch('/api/parent/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ card_id, parent_phone })
+            }).then(res => res.json()).then(student => {
+                const dash = document.getElementById('parentDashboardResult');
+                if(!student || student.error) { dash.innerHTML = '<p style="color:red">البيانات غير صحيحة أو الطالب غير موجود</p>'; return; }
+
+                let quizzesHtml = student.quizzes.map(q => {
+                    let isAbsent = q.id === null;
+                    return `<li style="${isAbsent ? 'color:red; font-weight:bold;' : ''}">تاريخ ${q.quiz_date}: <strong>${isAbsent ? 'غياب ❌ (0)' : q.score}</strong></li>`;
+                }).join('');
+
+                let examsHtml = student.exam_records.map(e => `<li>${e.exam_name}: ${e.score} / ${e.max_score}</li>`).join('');
+
+                dash.innerHTML = `
+                    <div style="background:#e8f4f8; border:2px solid #17a2b8; padding:20px; border-radius:8px; text-align:right;">
+                        <h3 style="color:#17a2b8; text-align:center;">متابعة ولي الأمر (عرض فقط)</h3>
+                        <p><strong>اسم الطالب:</strong> ${student.name}</p>
+                        <p><strong>الصف الدراسي:</strong> ${student.grade}</p>
+                        <p><strong>رقم الطالب:</strong> ${student.card_id}</p>
+                        <p><strong>أيام الحضور المقررة:</strong> ${student.days || 'غير محددة'}</p>
+                        <p><strong>حالة المصروفات:</strong> ${student.paid ? 'تم الدفع 💰' : 'لم يدفع ⏳'}</p>
+                        
+                        <p><strong>سجل الحضور والتسميع اليومي (من 1 أغسطس 2026):</strong></p>
+                        <ul style="background:white; padding:10px; border-radius:5px; max-height:180px; overflow-y:auto;">${quizzesHtml || '<li>لا توجد تسميعات مسجلة بعد</li>'}</ul>
+
+                        <p><strong>درجات الاختبارات:</strong></p>
+                        <ul style="background:white; padding:10px; border-radius:5px;">${examsHtml || '<li>لا توجد اختبارات مسجلة بعد</li>'}</ul>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
